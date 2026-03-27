@@ -5,3 +5,29 @@
   #footer a{
     color: #FFFFFF;
   }
+  canvas {
+  border: 2px solid #333;
+  border-radius: 10px;
+  background-color: #f8f9fa;
+}
+body {
+  background-color: #ffe4ec;
+}
+.control-panel {
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+canvas {
+  border-radius: 10px;
+  background-color: #fff;
+}
+
+canvas {
+  cursor: grab;
+}
+
+canvas:active {
+  cursor: grabbing;
+}
