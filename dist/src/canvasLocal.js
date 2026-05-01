@@ -1,128 +1,130 @@
 export class CanvasLocal {
     constructor(g, canvas) {
-        this.minWidth = 1; // zoom in
-        this.maxWidth = 5; // zoom out
-        this.offsetX = 0;
-        this.offsetY = 0;
-        this.maxOffsetX = 2;
-        this.maxOffsetY = 2;
-        this.userFunction = (x) => NaN;
-        this.color = "red";
         this.graphics = g;
-        this.rWidth = 4;
-        this.rHeight = 6;
+        this.rWidth = 12;
+        this.rHeight = 8;
         this.maxX = canvas.width - 1;
         this.maxY = canvas.height - 1;
-        this.centerX = this.maxX / 2;
-        this.centerY = this.maxY / 2;
-        this.updatePixelSize();
-    }
-    updatePixelSize() {
         this.pixelSize = Math.max(this.rWidth / this.maxX, this.rHeight / this.maxY);
+        this.centerX = this.maxX / 12;
+        this.centerY = this.maxY / 8 * 7;
     }
-    zoom(factor) {
-        const newWidth = this.rWidth * factor;
-        const newHeight = this.rHeight * factor;
-        // límites
-        if (newWidth < this.minWidth || newWidth > this.maxWidth)
-            return;
-        this.rWidth = newWidth;
-        this.rHeight = newHeight;
-        this.updatePixelSize();
-    }
-    setSize(width, height) {
-        this.rWidth = width;
-        this.rHeight = height;
-        this.updatePixelSize();
-    }
-    iX(x) {
-        return Math.round(this.centerX + (x + this.offsetX) / this.pixelSize);
-    }
-    iY(y) {
-        return Math.round(this.centerY - (y + this.offsetY) / this.pixelSize);
-    }
+    iX(x) { return Math.round(this.centerX + x / this.pixelSize); }
+    iY(y) { return Math.round(this.centerY - y / this.pixelSize); }
     drawLine(x1, y1, x2, y2) {
         this.graphics.beginPath();
         this.graphics.moveTo(x1, y1);
         this.graphics.lineTo(x2, y2);
         this.graphics.stroke();
     }
-    fx(x) {
-        return this.userFunction(x);
+    maxH(h) {
+        let max = h[0];
+        for (let i = 1; i < h.length; i++) {
+            if (max < h[i])
+                max = h[i];
+        }
+        let pot = 10;
+        while (pot < max)
+            pot *= 10;
+        pot /= 10;
+        return Math.ceil(max / pot) * pot;
     }
-    setFunction(f) {
-        this.userFunction = f;
+    //barra horizontal
+    drawBarraHorizontal3D(x, y, largo, alto, color) {
+        const d = 0.4;
+        this.graphics.fillStyle = color;
+        this.graphics.strokeStyle = 'black';
+        // frente
+        this.graphics.beginPath();
+        this.graphics.moveTo(this.iX(x), this.iY(y));
+        this.graphics.lineTo(this.iX(x + largo), this.iY(y));
+        this.graphics.lineTo(this.iX(x + largo), this.iY(y + alto));
+        this.graphics.lineTo(this.iX(x), this.iY(y + alto));
+        this.graphics.closePath();
+        this.graphics.fill();
+        this.graphics.stroke();
+        // arriba
+        this.graphics.beginPath();
+        this.graphics.moveTo(this.iX(x), this.iY(y));
+        this.graphics.lineTo(this.iX(x + d), this.iY(y - d));
+        this.graphics.lineTo(this.iX(x + largo + d), this.iY(y - d));
+        this.graphics.lineTo(this.iX(x + largo), this.iY(y));
+        this.graphics.closePath();
+        this.graphics.fill();
+        this.graphics.stroke();
+        // lado
+        this.graphics.beginPath();
+        this.graphics.moveTo(this.iX(x + largo), this.iY(y));
+        this.graphics.lineTo(this.iX(x + largo + d), this.iY(y - d));
+        this.graphics.lineTo(this.iX(x + largo + d), this.iY(y + alto - d));
+        this.graphics.lineTo(this.iX(x + largo), this.iY(y + alto));
+        this.graphics.closePath();
+        this.graphics.fill();
+        this.graphics.stroke();
     }
-    setColor(c) {
-        this.color = c;
+    drawGrid3D(maxEsc) {
+        let niveles = 4;
+        for (let i = 1; i <= niveles; i++) {
+            let valor = (maxEsc * i) / niveles;
+            let x = 6 * valor / maxEsc;
+            // línea principal
+            this.drawLine(this.iX(x + .4), this.iY(0), this.iX(x + .4), this.iY(6));
+            // profundidad
+            this.drawLine(this.iX(x + .4), this.iY(6), this.iX(x - 0.1), this.iY(6.5));
+        }
+        // base 
+        this.drawLine(this.iX(0.4), this.iY(6), this.iX(0), this.iY(6.5));
+        this.drawLine(this.iX(0.4), this.iY(0), this.iX(0.4), this.iY(6));
     }
-    paint() {
-        // limpiar
+    // metodo principal
+    paintHorizontal(h) {
+        const maxEsc = this.maxH(h);
+        const colors = ['magenta', 'red', 'green', 'yellow', 'blue'];
+        const labels = ['magenta', 'red', 'green', 'yellow', 'blue'];
         this.graphics.clearRect(0, 0, this.maxX, this.maxY);
+        this.graphics.font = "12px Arial";
+        this.graphics.strokeStyle = 'gray';
+        this.drawGrid3D(maxEsc);
+        this.graphics.strokeStyle = 'black';
         // ejes
-        this.graphics.strokeStyle = 'black';
-        this.drawLine(this.iX(-5), this.iY(0), this.iX(5), this.iY(0));
-        this.drawLine(this.iX(0), this.iY(5), this.iX(0), this.iY(-5));
-        // cuadrícula
-        this.graphics.strokeStyle = 'lightgray';
-        for (let x = -6; x <= 6; x += 0.5) {
-            this.drawLine(this.iX(x), this.iY(-6), this.iX(x), this.iY(6));
+        this.drawLine(this.iX(0), this.iY(6.5), this.iX(6.3), this.iY(6.5));
+        this.drawLine(this.iX(0), this.iY(0), this.iX(0), this.iY(6.5));
+        this.graphics.fillText("0", this.iX(0 - .4), this.iY(6.7));
+        // escala inferior
+        let divisiones = 4;
+        for (let i = 1; i <= divisiones; i++) {
+            let valor = (maxEsc * i) / divisiones;
+            let x = 6 * valor / maxEsc;
+            this.graphics.fillText(valor.toString(), this.iX(x - .5), this.iY(6.7));
         }
-        for (let y = -6; y <= 6; y += 0.5) {
-            this.drawLine(this.iX(-6), this.iY(y), this.iX(6), this.iY(y));
+        // barras
+        let alto = 0.7;
+        let espacio = 1.3;
+        let y = 6 - alto;
+        for (let i = 0; i < h.length; i++) {
+            let largo = 6 * h[i] / maxEsc;
+            this.drawBarraHorizontal3D(0, y, largo, alto, colors[i % colors.length]);
+            // etiquetas 
+            this.graphics.fillText(labels[i % labels.length], this.iX(-1), this.iY(y + 0.4));
+            y -= espacio;
         }
-        this.graphics.strokeStyle = 'black';
-        // eje X
-        for (let x = -5; x <= 5; x++) {
-            this.drawLine(this.iX(x), this.iY(-0.1), this.iX(x), this.iY(0.1));
-            this.graphics.strokeText(x + "", this.iX(x - 0.15), this.iY(-0.3));
-        }
-        // eje Y 
-        for (let y = -5; y <= 5; y++) {
-            this.drawLine(this.iX(-0.1), this.iY(y), this.iX(0.1), this.iY(y));
-            // evitar que el 0 se sobreponga con el eje X
-            if (y !== 0) {
-                this.graphics.strokeText(y + "", this.iX(0.2), this.iY(y + 0.1));
+        const coloresUsados = [];
+        for (let i = 0; i < h.length; i++) {
+            const color = colors[i % colors.length];
+            if (coloresUsados.indexOf(color) === -1) {
+                coloresUsados.push(color);
             }
         }
-        // etiquetas
-        this.graphics.strokeText("X", this.iX(4.7), this.iY(0.3));
-        this.graphics.strokeText("Y", this.iX(-0.4), this.iY(4.7));
-        // función
-        this.graphics.strokeStyle = this.color;
-        this.graphics.strokeStyle = this.color;
-        let paso = 0.05;
-        let extra = this.rWidth;
-        let minX = -this.rWidth / 2 - this.offsetX - extra;
-        let maxX = this.rWidth / 2 - this.offsetX + extra;
-        let prevValid = false;
-        for (let x = minX; x <= maxX; x += paso) {
-            let y1 = this.fx(x);
-            let y2 = this.fx(x + paso);
-            let valid1 = isFinite(y1) && !isNaN(y1);
-            let valid2 = isFinite(y2) && !isNaN(y2);
-            let saltoGrande = Math.abs(y2 - y1) > this.rHeight * 2;
-            if (valid1 && valid2 && !saltoGrande) {
-                this.drawLine(this.iX(x), this.iY(y1), this.iX(x + paso), this.iY(y2));
-                prevValid = true;
-            }
-            else {
-                prevValid = false;
-            }
+        // colores
+        let yLeyenda = 6;
+        for (let i = 0; i < coloresUsados.length; i++) {
+            this.graphics.fillStyle = coloresUsados[i];
+            // cuadrito de color
+            this.graphics.fillRect(this.iX(7.5), this.iY(yLeyenda + .5), 12, 12);
+            // texto color
+            this.graphics.fillStyle = 'black';
+            this.graphics.fillText(coloresUsados[i], this.iX(7.8), this.iY(yLeyenda + 0.3));
+            yLeyenda -= 0.8;
         }
-    }
-    move(dx, dy) {
-        this.offsetX += dx * this.pixelSize;
-        this.offsetY += dy * this.pixelSize;
-        //  limitar movimiento en X
-        if (this.offsetX > this.maxOffsetX)
-            this.offsetX = this.maxOffsetX;
-        if (this.offsetX < -this.maxOffsetX)
-            this.offsetX = -this.maxOffsetX;
-        //  limitar movimiento en Y
-        if (this.offsetY > this.maxOffsetY)
-            this.offsetY = this.maxOffsetY;
-        if (this.offsetY < -this.maxOffsetY)
-            this.offsetY = -this.maxOffsetY;
     }
 }
