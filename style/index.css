@@ -1,7 +1,128 @@
-#footer{
-    background: linear-gradient(0deg,#1c3643,#273b47 25%,#1e5372);
-  }
-  
-  #footer a{
-    color: #FFFFFF;
-  }
+/* Fondo general */
+
+body {
+    background: linear-gradient(135deg, #0b1120, #111827, #1e293b);
+    color: #e5e7eb;
+    min-height: 100vh;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+/* Navbar */
+
+.navbar-custom {
+    background: linear-gradient(90deg,
+            #020617,
+            #0f172a,
+            #1e3a8a);
+    border-bottom: 2px solid #2563eb;
+}
+
+.navbar-brand {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #60a5fa !important;
+}
+
+/* Tarjetas */
+
+.card {
+    background: rgba(17, 24, 39, 0.95);
+    border-radius: 18px;
+    border: 1px solid #334155;
+    color: white;
+    box-shadow: 0 0 20px rgba(37, 99, 235, 0.20);
+}
+
+.card-header {
+    background: #0f172a;
+    color: #60a5fa;
+    font-weight: bold;
+    border-bottom: 1px solid #334155;
+}
+
+.card-footer {
+    background: #0f172a;
+    color: #94a3b8;
+    border-top: 1px solid #334155;
+}
+
+/* Canvas */
+
+#circlechart {
+    background-color: black;
+    border: 3px solid #2563eb;
+    border-radius: 15px;
+    box-shadow: 0 0 20px rgba(37, 99, 235, 0.4);
+    max-width: 100%;
+}
+
+/* Botones */
+
+.btn {
+    border-radius: 10px;
+    transition: all .3s;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+}
+
+/* Contenido archivo */
+
+#contenido-archivo {
+
+    background-color: #0f172a;
+    color: #93c5fd;
+
+    border-radius: 10px;
+    border: 1px solid #334155;
+
+    padding: 15px;
+
+    max-height: 300px;
+    overflow-y: auto;
+
+    font-size: 13px;
+}
+
+/* Footer */
+
+#footer {
+    margin-top: 40px;
+
+    background: linear-gradient(
+            90deg,
+            #020617,
+            #0f172a,
+            #1e3a8a);
+
+    color: white;
+}
+
+#footer h5 {
+    color: #60a5fa;
+}
+
+#footer p {
+    color: #cbd5e1;
+}
+
+/* Slider */
+
+.form-range::-webkit-slider-thumb {
+    background: #2563eb;
+}
+
+.form-range::-moz-range-thumb {
+    background: #2563eb;
+}
+
+/* Responsive */
+
+@media (max-width: 991px) {
+
+    .col-lg-4 {
+        margin-top: 20px;
+    }
+
+}
